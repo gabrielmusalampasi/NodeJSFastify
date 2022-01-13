@@ -1,0 +1,101 @@
+containers:
+  my-container:
+    image: alpine:3.11.3
+  build-fastify-env:
+    image: node:14.3.0
+    volumes:
+      - local: .
+        container: /code
+        options: cached
+      - type: cache
+        name: node_modules
+        container: /code/node_modules
+    working_directory: /code
+
+  # postgres sql container
+  db:
+    image: postgres:alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - local: ./postgres-data
+        container: /var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: app
+      POSTGRES_DB: db
+
+  db-test:
+    image: postgres:alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: app
+      POSTGRES_DB: db
+
+tasks:
+  start-dev-db:
+    description: start development database
+    run:
+      container: db
+
+  start-test-db:
+    description: start test database
+    run:
+      container: db-test
+
+  say-hello:
+    description: Say hello to the nice person reading the Batect documentation
+    run:
+      container: my-container
+      command: echo 'Hello world!'
+
+  # task for installing dep of fastify app
+  install-dep:
+    description: Install dependencies needed to build fastify application
+    run:
+      container: build-fastify-env
+      command: npm install
+
+  test-ci:
+    description: Run test case in CI mode
+    dependencies:
+      - db-test
+    run:
+      container: build-fastify-env
+      environment:
+        PORT: 8080
+        POSTGRES_URI: postgres://app:password@db-test/db
+      command: npm run test
+
+  lint:
+    description: Run lint
+    run:
+      container: build-fastify-env
+      command: npm run lint
+
+  # task for running fastify app
+  start-server:
+    description: Run fastify application
+    run:
+      environment:
+        PORT: 8080
+        POSTGRES_URI: postgres://app:password@db/db
+      container: build-fastify-env
+      command: npm run start
+      ports:
+        - 5000:8080
+    dependencies:
+      - db
+
+  test-watch:
+    description: test running in watch mode
+    run:
+      container: build-fastify-env
+      environment:
+        PORT: 8080
+        POSTGRES_URI: postgres://app:password@db-test/db
+      command: npm run test:watch
+    dependencies:
+      - db-test

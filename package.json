@@ -1,0 +1,46 @@
+{
+  "name": "project-fastify",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start-prod": "node server.js",
+    "start": "nodemon server.js",
+    "test": "jest",
+    "test:watch": "jest --watchAll",
+    "lint:fix": "eslint '**/*.js' --fix",
+    "lint": "eslint '**/*.js'",
+    "format": "prettier --write '**/*.js'"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "db-migrate": "^0.11.12",
+    "db-migrate-pg": "^1.2.2",
+    "dotenv": "^10.0.0",
+    "fastify": "^3.19.1",
+    "fastify-cors": "^6.0.2",
+    "fastify-jwt": "^3.0.1",
+    "fastify-plugin": "^3.0.0",
+    "fastify-swagger": "^4.8.3",
+    "moment": "^2.29.1",
+    "nodemon": "^2.0.12",
+    "pg-promise": "^10.10.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.6.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jest": "^24.4.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "jest": "^27.4.7",
+    "pino-pretty": "^5.1.1",
+    "prettier": "2.3.2",
+    "tap": "^15.1.6"
+  },
+  "eslintIgnore": [
+    "*.test.js",
+    "*.spec.js"
+  ]
+}
